@@ -90,11 +90,19 @@
         transition: transform .3s ease-in-out;
     }
 
-    &:hover,
-    &:focus {
+    &:hover {
         color: $brightness-100;
         text-decoration: none;
+    }
 
+    &:focus {
+        background-color: $highlight-main;
+        color: $brand-main;
+        text-decoration: none;
+    }
+
+    &:hover,
+    &:focus {
         &:after {
             transform: translateY(4px)
         }
@@ -102,9 +110,12 @@
 
     .new-header--open & {
         @include mq(desktop) {
-            &:hover,
-            &:focus {
+            &:hover {
                 color: $highlight-main;
+            }
+
+            &:focus {
+                color: $brand-main;
             }
 
             &:after {
@@ -145,6 +156,7 @@
     }
 }
 
+// More button
 .pillar-link--sections {
     color: $brightness-100;
     font-weight: 300;
@@ -152,8 +164,12 @@
     padding-right: $gs-gutter / 4;
     transition: color 250ms ease-out;
 
-    &:hover,
-    &:focus {
+    &:hover {
         color: $highlight-main;
+    }
+
+    .new-header__menu-toggle:focus & {
+        background-color: $highlight-main;
+        color: $brand-main;
     }
 }

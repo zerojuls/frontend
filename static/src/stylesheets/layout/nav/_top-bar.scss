@@ -32,9 +32,14 @@
     position: relative;
     z-index: $zindex-main-menu + 2;
 
-    &:hover,
-    &:focus {
+    &:hover {
         color: $highlight-main;
+        text-decoration: none;
+    }
+
+    &:focus {
+        background-color: $highlight-main;
+        color: $brand-main;
         text-decoration: none;
     }
 

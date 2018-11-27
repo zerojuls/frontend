@@ -61,7 +61,6 @@ from scrolling */
 
 .new-header__menu-toggle {
     display: block;
-    outline: 0;
     position: relative;
 
     @include mq($until: desktop) {
@@ -86,10 +85,6 @@ from scrolling */
             top: $gs-baseline / 4;
             bottom: auto;
         }
-    }
-
-    &:active {
-        outline: 0;
     }
 }
 
@@ -118,6 +113,10 @@ from scrolling */
         @include mq(wide) {
             margin-right: 96px;
         }
+    }
+
+    &:focus {
+        outline-color: $highlight-main;
     }
 
     .new-header--slim & {

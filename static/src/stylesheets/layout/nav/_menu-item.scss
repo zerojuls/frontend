@@ -75,14 +75,15 @@
         padding: ($gs-baseline / 2) 0;
     }
 
-    &:hover,
-    &:focus {
+    &:hover {
         color: $highlight-main;
         text-decoration: none;
     }
 
     &:focus {
-        text-decoration: underline;
+        color: $brand-main;
+        background-color: $highlight-main;
+        text-decoration: none;
     }
 
     > * {
