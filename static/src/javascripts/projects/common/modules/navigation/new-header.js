@@ -101,7 +101,7 @@ const toggleMenu = (): void => {
     const documentElement = document.documentElement;
     const openClass = 'new-header--open';
     const globalOpenClass = 'nav-is-open';
-    const trigger = document.querySelector('.veggie-burger');
+    const trigger = document.querySelector('#main-menu-toggle');
     const newHeader = document.querySelector('.new-header');
     const menuToggle = newHeader && newHeader.querySelector('.js-change-link');
     const isOpen = trigger && trigger.getAttribute('aria-expanded') === 'true';
