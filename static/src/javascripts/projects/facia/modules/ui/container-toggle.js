@@ -13,9 +13,9 @@ const toggleText = {
     displayed: 'Hide',
 };
 
-const btnTmpl = ({ text, dataLink }) => `
-    <button class="fc-container__toggle" data-link-name="${dataLink}">
-        <span class="fc-container__toggle__text">${text}</span>
+const btnTmpl = ({ text, dataLink, title }) => `
+    <button class="fc-container__toggle" data-link-name="${dataLink}" aria-label="${text} ${title} section">
+        ${text}
     </button>
 `;
 
@@ -25,19 +25,20 @@ export class ContainerToggle {
     $button: bonzo;
     constructor(container: Element) {
         this.$container = bonzo(container);
+
+        const $containerBody = $('.fc-container__body', this.$container[0]);
+
+        this.title = $containerBody.attr('data-title');
         this.$button = bonzo(
             bonzo.create(
                 btnTmpl({
+                    title: this.title,
                     text: 'Hide',
                     dataLink: 'Show',
                 })
             )
         );
         this.state = 'displayed';
-    }
-
-    buttonText(): bonzo {
-        return $('.fc-container__toggle__text', this.$button);
     }
 
     updatePref(id: string): void {
@@ -69,7 +70,15 @@ export class ContainerToggle {
                 'data-link-name',
                 toggleText[this.state === 'displayed' ? 'hidden' : 'displayed']
             );
-            this.buttonText().text(toggleText[this.state]);
+            this.$button.text(toggleText[this.state]);
+            this.$button.attr(
+                'aria-label',
+                `${
+                    toggleText[
+                        this.state === 'displayed' ? 'displayed' : 'hidden'
+                    ]
+                } ${this.title} section`
+            );
         });
     }
 
