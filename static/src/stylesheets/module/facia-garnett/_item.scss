@@ -256,10 +256,16 @@ $fc-item-gutter: $gs-gutter / 4;
     }
 }
 
+.fc-sublink__kicker,
+.fc-sublink__link,
 .fc-item__link {
     &:hover,
     &:focus {
         text-decoration: none;
+    }
+
+    &:focus {
+        background-color: $highlight-dark;
     }
 }
 
