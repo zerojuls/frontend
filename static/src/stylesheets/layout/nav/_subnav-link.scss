@@ -28,9 +28,13 @@
         font-weight: 700;
     }
 
-    &:hover,
+    &:hover {
+        color: $brightness-20;
+    }
+
     &:focus {
         color: $brightness-20;
+        background-color: $highlight-dark;
     }
 }
 

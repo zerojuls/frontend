@@ -4,8 +4,7 @@
     }
 
     .subnav-link {
-        &:hover,
-        &:focus {
+        &:hover {
             color: $colourOne;
             text-decoration: none;
         }
