@@ -370,7 +370,7 @@ const menuKeyHandlers = {
     },
 };
 
-const enhanceCheckbox = (checkbox: HTMLElement): void => {
+const enhanceCheckbox = (checkbox: HTMLElement): Promise<any> =>
     fastdom.read(() => {
         const button = document.createElement('button');
         const checkboxId = checkbox.id;
@@ -431,27 +431,29 @@ const enhanceCheckbox = (checkbox: HTMLElement): void => {
             enhanced[button.id] = true;
         };
 
-        fastdom.write(enhance);
+        return fastdom.write(enhance);
     });
-};
 
-const enhanceMenuToggles = (): void => {
+const enhanceMenuToggles = (): Promise<any> => {
     const checkboxs: Array<HTMLInputElement> = ([
         ...document.getElementsByClassName('js-enhance-checkbox'),
     ]: Array<any>);
 
-    checkboxs.forEach(checkbox => {
-        if (!enhanced[checkbox.id] && !checkbox.checked) {
-            enhanceCheckbox(checkbox);
-        } else {
+    return Promise.all(
+        checkboxs.map(checkbox => {
+            if (!enhanced[checkbox.id] && !checkbox.checked) {
+                return enhanceCheckbox(checkbox);
+            }
             const closeMenuHandler = (): void => {
                 enhanceCheckbox(checkbox);
                 checkbox.removeEventListener('click', closeMenuHandler);
             };
 
             checkbox.addEventListener('click', closeMenuHandler);
-        }
-    });
+
+            return Promise.resolve();
+        })
+    );
 };
 
 const getRecentSearch = (): ?string => local.get(SEARCH_STORAGE_KEY);
@@ -576,6 +578,101 @@ const addEventHandler = (): void => {
     }
 };
 
+const bindMoreThings = () => {
+    fastdom
+        .read(() => ({
+            toggle: document.getElementById(MENU_TOGGLE_ID),
+            menu: getMenu(),
+        }))
+        .then(({ toggle, menu }) => {
+            const pillars = [
+                ...document.querySelectorAll('.pillars .pillar-link'),
+                toggle,
+            ];
+            const menuLists = [
+                ...document.querySelectorAll('.js-navigation-item'),
+                ...document.querySelectorAll('.menu-group--footer'),
+            ];
+            let selectedPillarIndex = pillars.length - 1;
+            let selectedMenuItemIndex = -1;
+            let selectedMenu = menuLists[selectedPillarIndex].querySelectorAll(
+                '.menu-group--secondary .menu-item__title'
+            );
+
+            document.addEventListener('keydown', event => {
+                if (event.key.toLowerCase() === 'm') {
+                    toggleMenu();
+                    fastdom
+                        .read(() => document.getElementById(MENU_TOGGLE_ID))
+                        .then(btn => {
+                            if (btn) {
+                                btn.focus();
+                            }
+                        });
+                }
+            });
+
+            const cursorKeyNavigation = event => {
+                const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+
+                if (event.key === 'ArrowLeft' && selectedPillarIndex > 0) {
+                    selectedPillarIndex -= 1;
+                    selectedMenuItemIndex = -1;
+                    selectedMenu = menuLists[
+                        selectedPillarIndex
+                    ].querySelectorAll(
+                        '.menu-group--secondary .menu-item__title'
+                    );
+                    pillars[selectedPillarIndex].focus();
+                }
+                if (
+                    event.key === 'ArrowRight' &&
+                    selectedPillarIndex < pillars.length - 1
+                ) {
+                    selectedPillarIndex += 1;
+                    selectedMenuItemIndex = -1;
+                    selectedMenu = menuLists[
+                        selectedPillarIndex
+                    ].querySelectorAll(
+                        '.menu-group--secondary .menu-item__title'
+                    );
+                    pillars[selectedPillarIndex].focus();
+                }
+                if (isOpen && event.key === 'ArrowDown') {
+                    console.log('Going down');
+                    if (selectedMenuItemIndex < selectedMenu.length - 1) {
+                        event.preventDefault();
+                        selectedMenuItemIndex += 1;
+                        selectedMenu[selectedMenuItemIndex].focus();
+                    }
+                }
+
+                if (
+                    isOpen &&
+                    event.key === 'ArrowUp' &&
+                    selectedMenuItemIndex > -1
+                ) {
+                    event.preventDefault();
+                    selectedMenuItemIndex -= 1;
+
+                    if (selectedMenuItemIndex === -1) {
+                        pillars[selectedPillarIndex].focus();
+                    } else {
+                        selectedMenu[selectedMenuItemIndex].focus();
+                    }
+                }
+            };
+
+            menu.addEventListener('keydown', cursorKeyNavigation);
+            [...document.getElementsByClassName('pillars')].forEach(
+                menuLink => {
+                    menuLink.addEventListener('keydown', cursorKeyNavigation);
+                }
+            );
+            toggle.addEventListener('keydown', cursorKeyNavigation);
+        });
+};
+
 const bindCredentialsApiSignIn = (): void => {
     fastdom
         .read(() => ({
@@ -605,7 +702,9 @@ const bindCredentialsApiSignIn = (): void => {
 };
 
 export const newHeaderInit = (): void => {
-    enhanceMenuToggles();
+    enhanceMenuToggles().then(() => {
+        bindMoreThings();
+    });
     showMoreButton();
     addEventHandler();
     showMyAccountIfNecessary();
