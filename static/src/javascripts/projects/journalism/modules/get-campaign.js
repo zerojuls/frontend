@@ -7,13 +7,12 @@ export const getCampaigns = () => {
     const allCampaigns = config.get('page.campaigns');
     const allCallouts = allCampaigns.filter(isCallout);
 
-    console.log('allcallouts', allCallouts);
-
     return allCallouts.map(callout => ({
         name: callout.name,
         title: callout.fields.callout,
         description: callout.fields.description || `<p>&nbsp;</p>`,
         formFields: callout.fields.formFields,
         formId: callout.fields.formId,
+        tagName: callout.fields.tagName,
     }));
 };
